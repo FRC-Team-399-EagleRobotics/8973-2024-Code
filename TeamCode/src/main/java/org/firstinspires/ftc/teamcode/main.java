@@ -29,10 +29,10 @@ public class main extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        frontLeft0 = hardwareMap.dcMotor.get("drmotor0");
-        frontRight1 = hardwareMap.dcMotor.get("drmotor1");
-        backLeft2 = hardwareMap.dcMotor.get("drmotor2");
-        backRight3 = hardwareMap.dcMotor.get("drmotor3");
+        frontLeft0 = hardwareMap.dcMotor.get("frontLeft0");
+        frontRight1 = hardwareMap.dcMotor.get("frontRight1");
+        backLeft2 = hardwareMap.dcMotor.get("backLeft2");
+        backRight3 = hardwareMap.dcMotor.get("backRight3");
         motorarm = hardwareMap.dcMotor.get("arm");
 
 
