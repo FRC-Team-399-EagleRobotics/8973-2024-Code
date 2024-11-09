@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 @TeleOp
@@ -12,6 +13,7 @@ public class main extends LinearOpMode {
     DcMotor backLeft2;
     DcMotor backRight3;
     DcMotor motorarm;
+    Servo intake;
 
     public void drive(double power, double turn){
         double leftPower;
@@ -33,13 +35,31 @@ public class main extends LinearOpMode {
         frontRight1 = hardwareMap.dcMotor.get("frontRight1");
         backLeft2 = hardwareMap.dcMotor.get("backLeft2");
         backRight3 = hardwareMap.dcMotor.get("backRight3");
+        frontLeft0.setDirection(DcMotor.Direction.REVERSE);
+        backLeft2.setDirection(DcMotor.Direction.REVERSE);
         motorarm = hardwareMap.dcMotor.get("arm");
+        intake = hardwareMap.get(Servo.class, "intake");
 
 
         waitForStart();
         if(isStopRequested()) return;
         while(opModeIsActive()){
-            drive(-gamepad1.left_stick_y, gamepad1.right_stick_x);
+            float thr = gamepad1.left_trigger + gamepad1.right_trigger;
+            float str = gamepad1.right_stick_x;
+            drive(-thr, str);
+            if (gamepad1.y){
+                intake.setPosition(0);
+                telemetry.addData("Buttonycoderunning","True");
+            }
+            else if (gamepad1.a) {
+                intake.setPosition(1);
+                telemetry.addData("Button A pressed","True");
+            }
+            else {
+                intake.setPosition(0.545);
+                telemetry.addData("nobuttonspressed","true");
+            }
+            telemetry.update();
         }
 
     }
