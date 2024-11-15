@@ -44,9 +44,9 @@ public class main extends LinearOpMode {
         waitForStart();
         if(isStopRequested()) return;
         while(opModeIsActive()){
-            float thr = gamepad1.left_trigger + gamepad1.right_trigger;
+            float thr = gamepad1.right_trigger - gamepad1.left_trigger;
             float str = gamepad1.right_stick_x;
-            drive(-thr, str);
+            drive(thr, str);
             if (gamepad1.y){
                 intake.setPosition(0);
                 telemetry.addData("Buttonycoderunning","True");
