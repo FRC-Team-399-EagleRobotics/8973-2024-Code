@@ -21,7 +21,7 @@ public class auton extends LinearOpMode {
     final  double kI = 0.1;
     final  double iLimit = 0.1;
     final  double kD = 0.1;
-    final double CONVERSION_RATIO = 12;
+    final double CONVERSION_RATIO = 12;//TODO This is to convert from ticks (at the motor) to feet this involves dividing by ticks/rev and by rev/feet so this should probably include ticks and wheel diameter.
     ElapsedTime time;
     double errorSum;
     double lastError;
@@ -33,7 +33,7 @@ public class auton extends LinearOpMode {
         time = new ElapsedTime();
         lastError = 0;
         lastTimeStep = 0;
-        dt = time.seconds() - lastTimeStep;
+        dt = time.seconds() - lastTimeStep;//TODO this might need to be inside the while loop
     telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
@@ -51,7 +51,7 @@ public class auton extends LinearOpMode {
 
         while (opModeIsActive()) {
 
-            double sensorPosition = (frontLeft0.getCurrentPosition()+frontRight1.getCurrentPosition()+backLeft2.getCurrentPosition()+backRight3.getCurrentPosition())/4*CONVERSION_RATIO;
+            double sensorPosition = (frontLeft0.getCurrentPosition()+frontRight1.getCurrentPosition()+backLeft2.getCurrentPosition()+backRight3.getCurrentPosition())/4*CONVERSION_RATIO;//TODO this should probably be divided by conversion ratio
             double error = SET_POINT - sensorPosition;
             if (Math.abs(error) < iLimit){
                 errorSum += error * dt;
