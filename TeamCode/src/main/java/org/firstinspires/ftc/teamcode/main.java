@@ -6,6 +6,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+enum Positions{
+    FLOOR,
+    STOW,
+    BUCKET
+
+}
 @TeleOp
 public class main extends LinearOpMode {
     DcMotor frontLeft0;
@@ -13,7 +19,9 @@ public class main extends LinearOpMode {
     DcMotor backLeft2;
     DcMotor backRight3;
     DcMotor motorarm;
+    DcMotor extendarm;
     Servo intake;
+    DcMotor intakeCoreHex;
 
     public void drive(double power, double turn){
         double leftPower;
@@ -28,6 +36,26 @@ public class main extends LinearOpMode {
 
 
     }
+    public void setArmPosition(Positions position){
+        switch(position){
+            case FLOOR:
+
+                break;
+            case STOW:
+
+                break;
+            case BUCKET:
+
+                break;
+            default:
+                break;
+        }
+        motorarm.setTargetPosition(0);
+
+    }
+    public void grab
+
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -38,7 +66,10 @@ public class main extends LinearOpMode {
         frontLeft0.setDirection(DcMotor.Direction.REVERSE);
         backLeft2.setDirection(DcMotor.Direction.REVERSE);
         motorarm = hardwareMap.dcMotor.get("arm");
-        intake = hardwareMap.get(Servo.class, "intake");
+        extendarm = hardwareMap.dcMotor.get("extend");
+//        intake = hardwareMap.get(Servo.class, "intake");
+        intakeCoreHex = hardwareMap.get(DcMotor.class, "intake");
+        intakeCoreHex.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
         waitForStart();
@@ -47,18 +78,36 @@ public class main extends LinearOpMode {
             float thr = gamepad1.right_trigger - gamepad1.left_trigger;
             float str = gamepad1.right_stick_x;
             drive(thr, str);
-            if (gamepad1.y){
-                intake.setPosition(0);
-                telemetry.addData("Buttonycoderunning","True");
+//            if (gamepad1.y){
+//                intake.setPosition(0);
+//                telemetry.addData("Buttonycoderunning","True");
+//            }
+//            else if (gamepad1.a) {
+//                intake.setPosition(1);
+//                telemetry.addData("Button A pressed","True");
+//            }
+//            else {
+//                intake.setPosition(0.545);
+//                telemetry.addData("nobuttonspressed","true");
+//            }
+            if (gamepad2.dpad_down) {
+                while(intakeCoreHex.getCurrentPosition()<1000) {
+                    telemetry.addData("Position", intakeCoreHex.getCurrentPosition());
+                    intakeCoreHex.setPower(1);
+                }
             }
-            else if (gamepad1.a) {
-                intake.setPosition(1);
-                telemetry.addData("Button A pressed","True");
+            else if (gamepad2.dpad_up) {
+                intakeCoreHex.setPower(-1);
+            }
+            if(gamepad1.a){
+
             }
             else {
-                intake.setPosition(0.545);
-                telemetry.addData("nobuttonspressed","true");
+                intakeCoreHex.setPower(0);
             }
+
+            motorarm.setPower(gamepad2.left_stick_y);
+            extendarm.setPower(-gamepad2.right_stick_y);
             telemetry.update();
         }
 
