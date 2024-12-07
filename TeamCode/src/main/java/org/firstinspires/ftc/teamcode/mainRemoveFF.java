@@ -4,18 +4,17 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 //if else
-enum Positions{
+enum Positions1{
     FLOOR,
     STOW,
     BUCKET
 
 }
 @TeleOp
-public class main extends LinearOpMode {
+public class mainRemoveFF extends LinearOpMode {
     int target = 0;
     DcMotor frontLeft0;
     DcMotor frontRight1;
@@ -40,7 +39,7 @@ public class main extends LinearOpMode {
 
 
     }
-    public void setArmPosition(Positions position){
+    public void setArmPosition(Positions1 position){
         switch(position){
             case FLOOR:
 
@@ -126,7 +125,7 @@ public class main extends LinearOpMode {
             //motorarm.setPower(pid);
             telemetry.addData("Encodertodegrees", (encoderToDegrees(armPos)));
             telemetry.addData("ff", ff);
-            motorarm.setPower(ff+pid);
+            motorarm.setPower(pid);
             //motorarm.setPower(gamepad2.left_stick_y);
             extendarm.setPower(-gamepad2.right_stick_y);
             telemetry.update();

@@ -4,11 +4,13 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 //import com.acmerobotics.dashboard.FtcDashboard;
 //import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+
 @Autonomous(name="testauto")
 public class testAuto extends LinearOpMode {
     DcMotor frontLeft0;
@@ -18,6 +20,7 @@ public class testAuto extends LinearOpMode {
     DcMotor motorArm;
     DcMotor extendArm;
     DcMotor intakeCoreHex;
+    PIDController armController;
     public final int ARM_TOP_POS = 1000;
 
     public void setArmPosition(int position){
