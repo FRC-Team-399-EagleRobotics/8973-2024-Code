@@ -102,27 +102,33 @@ public class main extends LinearOpMode {
 //            }
             if (gamepad2.dpad_down) {
 
-                    intakeCoreHex.setPower(1);
+                    intakeCoreHex.setPower(-1);
 
             }
             else if (gamepad2.dpad_up) {
-                intakeCoreHex.setPower(-1);
+                intakeCoreHex.setPower(1);
             }
 
+
+
             else {
+
                 intakeCoreHex.setPower(0);
             }
             telemetry.addData("Arm", motorarm.getCurrentPosition());
             if(gamepad2.a) {
                 target = 0;
             } else if(gamepad2.b) {
-                target = 1000;
+                target = 960;
+            } else if(gamepad2.x) {
+                target = 980;
             }
+
 
             int armPos = motorarm.getCurrentPosition();
             double pid = armController.calculate(armPos, target);
 
-            double ff = Math.cos(Math.toRadians(encoderToDegrees(armPos)))*0.025;
+            double ff = Math.cos(Math.toRadians(encoderToDegrees(target)))*0.025;
             //motorarm.setPower(pid);
             telemetry.addData("Encodertodegrees", (encoderToDegrees(armPos)));
             telemetry.addData("ff", ff);
