@@ -87,8 +87,7 @@ public class auton extends LinearOpMode {
         if (isStopRequested()) return;
         while (opModeIsActive()) {
             driveToPosition(0.5, 1000);
-
-
+            return;
         }
 
 

@@ -81,7 +81,8 @@ public class main extends LinearOpMode {
         extendarm = hardwareMap.dcMotor.get("extend");
 //        intake = hardwareMap.get(Servo.class, "intake");
         intakeCoreHex = hardwareMap.get(DcMotor.class, "intake");
-        intakeCoreHex.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intakeCoreHex.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
 
         waitForStart();
@@ -121,9 +122,11 @@ public class main extends LinearOpMode {
             if(gamepad2.a) {
                 target = 0;
             } else if(gamepad2.b) {
-                target = 1050;
+                target = 1125;
             } else if(gamepad2.x) {
-                target = 110;
+                target = 160;
+            }else if(gamepad2.y) {
+                target = -500;
             }
 
 
