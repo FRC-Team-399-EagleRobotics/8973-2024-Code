@@ -4,21 +4,18 @@ import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 //if else
-//enum Positions{
-//    FLOOR,
-//    STOW,
-//    BUCKET
-//
-//}
+enum Positions{
+    FLOOR,
+    STOW,
+    BUCKET
+
+}
 @TeleOp
-public class main extends LinearOpMode {
+public class mainOld extends LinearOpMode {
     int target = 0;
-    int error;
-    double kPArm = 0.01;
     DcMotor frontLeft0;
     DcMotor frontRight1;
     DcMotor backLeft2;
@@ -27,7 +24,7 @@ public class main extends LinearOpMode {
     DcMotor extendarm;
     Servo intake;
     DcMotor intakeCoreHex;
-    //private PIDController armController;
+    private PIDController armController;
 
     public void drive(double power, double turn){
         double leftPower;
@@ -64,7 +61,7 @@ public class main extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        //armController = new PIDController(0.0005, 0, 0.0000001);
+        armController = new PIDController(0.0005, 0, 0.0000001);
 
 
         frontLeft0 = hardwareMap.dcMotor.get("frontLeft0");
@@ -121,23 +118,20 @@ public class main extends LinearOpMode {
             if(gamepad2.a) {
                 target = 0;
             } else if(gamepad2.b) {
-                target = 1050;
+                target = 960;
             } else if(gamepad2.x) {
-                target = 110;
+                target = 980;
             }
 
 
             int armPos = motorarm.getCurrentPosition();
-            error = target-armPos;
-            double armOutPower = error*kPArm;
+            double pid = armController.calculate(armPos, target);
 
-            //double pid = armController.calculate(armPos, target);
-
-            //double ff = Math.cos(Math.toRadians(encoderToDegrees(target)))*0.025;
+            double ff = Math.cos(Math.toRadians(encoderToDegrees(target)))*0.025;
             //motorarm.setPower(pid);
             telemetry.addData("Encodertodegrees", (encoderToDegrees(armPos)));
-            //telemetry.addData("ff", ff);
-            motorarm.setPower(armOutPower);
+            telemetry.addData("ff", ff);
+            motorarm.setPower(ff+pid);
             //motorarm.setPower(gamepad2.left_stick_y);
             extendarm.setPower(-gamepad2.right_stick_y);
             telemetry.update();
