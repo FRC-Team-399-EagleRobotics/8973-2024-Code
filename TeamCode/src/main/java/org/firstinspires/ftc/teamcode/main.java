@@ -119,14 +119,15 @@ public class main extends LinearOpMode {
                 intakeCoreHex.setPower(0);
             }
             telemetry.addData("Arm", motorarm.getCurrentPosition());
+            telemetry.addData("drive",frontLeft0.getCurrentPosition());
             if(gamepad2.a) {
                 target = 0;
             } else if(gamepad2.b) {
-                target = 1125;
+                target = 1406;//1125/20*25;
             } else if(gamepad2.x) {
-                target = 160;
+                target = 200;//160;
             }else if(gamepad2.y) {
-                target = -500;
+                target = -625;//500;
             }
 
 
