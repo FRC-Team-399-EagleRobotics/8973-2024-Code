@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.webkit.HttpAuthHandler;
-
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -12,11 +10,11 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+
 class Action{
     public Action() {
     }
@@ -25,9 +23,9 @@ class Action{
         return true;
     }
 }
-class RobotAction extends Action{
+class Robot{
     IMU imu;
-    int target = 0;
+    int target;
     int ticksPerIn = 45;//188;
     DcMotor frontLeft0;
     DcMotor frontRight1;
@@ -37,7 +35,7 @@ class RobotAction extends Action{
     DcMotor extendarm;
     Servo intake;
     DcMotor intakeCoreHex;
-    RobotAction(HardwareMap hardwareMap) {
+    Robot(HardwareMap hardwareMap) {
         frontLeft0 = hardwareMap.dcMotor.get("frontLeft0");
         frontRight1 = hardwareMap.dcMotor.get("frontRight1");
         backLeft2 = hardwareMap.dcMotor.get("backLeft2");
@@ -45,7 +43,6 @@ class RobotAction extends Action{
         frontLeft0.setDirection(DcMotor.Direction.REVERSE);
         backLeft2.setDirection(DcMotor.Direction.REVERSE);
         motorarm = hardwareMap.dcMotor.get("arm");
-        motorarm.setDirection(DcMotor.Direction.REVERSE);
         motorarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeft0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -63,22 +60,19 @@ class RobotAction extends Action{
                 RevHubOrientationOnRobot.UsbFacingDirection.LEFT));
         // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
         imu.initialize(parameters);
-
-    }
-
-    public boolean run(){
-        return true;
+        target = 0;
     }
 }
 class SequentialAction extends Action{
     private Action[] CurrentActions;
     private int index = 0;
-    public SequentialAction(HardwareMap hardwareMap, Action ... actions){
+    boolean done;
+    public SequentialAction(HardwareMap hardwareMap, Action ... actions) {
         CurrentActions = actions;
     }
     @Override
     public boolean run(){
-        boolean done = CurrentActions[0].run();
+        done = CurrentActions[0].run();
         if (done){
             index++;
             if (index>CurrentActions.length){
@@ -89,49 +83,122 @@ class SequentialAction extends Action{
             }
         }
         else{
-            return done;
+            return false;
         }
     }
 }
-class ArmUpdate extends RobotAction{
+class ArmUpdate extends Action{
     final double kPArm = 0.01;
     int armPos;
     int error;
     double armOutPower;
+    Robot robot;
 
-    ArmUpdate(HardwareMap hardwareMap) {
-        super(hardwareMap);
+    ArmUpdate(Robot r) {
+        robot = r;
     }
 
     @Override
     public boolean run(){
-        armPos = motorarm.getCurrentPosition();
-        error = target-armPos;
+        armPos = robot.motorarm.getCurrentPosition();
+        error = robot.target-armPos;
         armOutPower = error*kPArm;
-        motorarm.setPower(armOutPower);
+        robot.motorarm.setPower(-armOutPower);
         return false;
     }
 }
-class ArmScore extends RobotAction{
-    ArmScore(HardwareMap hardwareMap) {
-        super(hardwareMap);
+class ArmScore extends Action{
+    Robot robot;
+    double accuracy;
+    ArmScore(Robot r) {
+        robot = r;
+        accuracy = 20;
     }
 
     @Override
     public boolean run(){
-        target = 1406;
+        robot.target = 140;//6;
+        if (robot.motorarm.getCurrentPosition()+accuracy> robot.target) {
+            return true;
+        }
+        else{
+            return false;
+            }
+    }
+}
+class Outake extends Action{
+    Robot robot;
+    Outake(Robot r){
+        robot = r;
+    }
+    @Override
+    public boolean run(){
+        robot.intakeCoreHex.setPower(1);
         return true;
     }
 }
-class Outake extends RobotAction{
-    Outake(HardwareMap hardwareMap){
-        super(hardwareMap);
-        intakeCoreHex.setPower(1);
+class Drive extends Action{
+    Robot robot;
+    double position;
+    double averagePos;
+    boolean initialized;
+    double turn;
+    double power;
+    Drive(Robot r, double pow, double pos,double t){
+        robot  = r;
+        initialized = false;
+        power = pow;
+        position = pos;
+        turn = t;
+
+        }
+    @Override
+    public boolean run(){
+        if (!initialized){
+            double leftPower;
+            double rightPower;
+//            leftPower = Range.clip(power + turn, -1, 1);
+//            rightPower = Range.clip(power - turn, -1, 1);
+            leftPower = power + turn;
+            rightPower = power - turn;
+
+            robot.frontLeft0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.frontRight1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.backLeft2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.backRight3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.frontLeft0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.frontRight1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.backLeft2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.backRight3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            averagePos = 0;
+            robot.frontLeft0.setPower(leftPower);
+            robot.frontRight1.setPower(rightPower);
+            robot.backLeft2.setPower(leftPower);
+            robot.backRight3.setPower(rightPower);
+
+            initialized = true;
+        }
+        averagePos = (Math.abs(robot.frontLeft0.getCurrentPosition()) + Math.abs(robot.frontRight1.getCurrentPosition()))/2.0;
+//            telemetry.addData("averagePos", averagePos);
+//            telemetry.addData("target",position*ticksPerIn);
+//            telemetry.update();
+        if (averagePos > position*robot.ticksPerIn){
+            robot.frontLeft0.setPower(0);
+            robot.frontRight1.setPower(0);
+            robot.backLeft2.setPower(0);
+            robot.backRight3.setPower(0);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
+
 }
-class Sceduler{
+
+class Scheduler {
     ArrayList<Action> Actions = new ArrayList<>();
-    Sceduler() {
+    Scheduler() {
     }
     void run(){
         ArrayList<Integer> toRemove = new ArrayList<>();
@@ -151,7 +218,7 @@ class Sceduler{
     }
 }
 
-@Autonomous(name = "auton1SampleC", group = "Autonomous")
+@Autonomous(name = "autonC", group = "Autonomous")
 public class auton1SampleCommand extends LinearOpMode {
 
     private PIDController armController;
@@ -160,56 +227,6 @@ public class auton1SampleCommand extends LinearOpMode {
         return (enc / 5.882) + 50-90;
     }
 
-//TODO make this code work with sceme!! probably driveforward action
-//    public void drive(double power, double turn) {
-//        double leftPower;
-//        double rightPower;
-//        leftPower = Range.clip(power + turn, -1, 1);
-//        rightPower = Range.clip(power - turn, -1, 1);
-//        frontLeft0.setPower(leftPower);
-//        frontRight1.setPower(rightPower);
-//        backLeft2.setPower(leftPower);
-//        backRight3.setPower(rightPower);
-//
-//
-//    public void driveToPosition(double power, int position){
-//        frontLeft0.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        frontRight1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        backLeft2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        backRight3.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        frontLeft0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        frontRight1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        backLeft2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        backRight3.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        double averagePos =  (Math.abs(frontLeft0.getCurrentPosition()) + Math.abs(frontRight1.getCurrentPosition()))/2.0;
-//        while (opModeIsActive() && (averagePos < position*ticksPerIn)) {
-//            drive(power, 0);
-//            averagePos = (Math.abs(frontLeft0.getCurrentPosition()) + Math.abs(frontRight1.getCurrentPosition()))/2.0;
-//            telemetry.addData("averagePos", averagePos);
-//            telemetry.addData("target",position*ticksPerIn);
-//            telemetry.update();
-//        }
-//        drive(0, 0);
-//    }
-//    public double getAngle(){
-//
-//        double heading= imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-//        telemetry.addData("Heading", heading);
-//        telemetry.update();
-//        return heading;
-//    }
-//
-//    public void driveToAngle(double power, int degrees){
-//        frontLeft0.setPower(power);
-//        backLeft2.setPower(power);
-//        frontRight1.setPower(-power);
-//        backRight3.setPower(-power);
-//        int accuracy = 5;
-//        while(opModeIsActive()&&(Math.abs(getAngle()-degrees))>accuracy){}
-//        drive(0, 0);
-//
-//
-//    }
 
 
     @Override
@@ -221,36 +238,13 @@ public class auton1SampleCommand extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
         boolean completed = false;
-        while (opModeIsActive() && !completed) {
-            //TODO update to use command
-//            driveToPosition(-0.1,6);
-//            driveToAngle(0.5,90);
-//            driveToPosition(-0.5,24);
-//            driveToAngle(0.5,135);
-//            setArmPosition(1406);
-//            intakeCoreHex.setPower(1);
-            sleep(1000);
-            completed = true;
-//            driveToPosition(0.4, 40);
-//            driveToAngle(0.3, 90);
-//            driveToPosition(0.4, 1000);
-//            driveToAngle(0.3, 135);
-//            setArmPosition(990);
-//            extendarm.setPower(0.5);
-//            sleep(1500);
-//            extendarm.setPower(0);
-////            driveToPosition(0.4, 50);
-//
-//
-//            intakeCoreHex.setPower(-1);
-//            sleep(1500);
-//            intakeCoreHex.setPower(0);
-
-
-
-
+        Robot robot = new Robot(hardwareMap);
+        Scheduler sceduler = new Scheduler();
+        sceduler.add(new SequentialAction(hardwareMap, new Drive(robot,0.5,10,0.5), new ArmScore(robot),new Outake(robot)));
+        sceduler.add(new ArmUpdate(robot));
+//        sceduler.add(new Outake(robot));
+        while (opModeIsActive()){
+            sceduler.run();
         }
-
-
     }
 }
