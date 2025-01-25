@@ -42,23 +42,23 @@ public class main extends LinearOpMode {
 
 
     }
-    public void setArmPosition(Positions position){
-        switch(position){
-            case FLOOR:
-
-                break;
-            case STOW:
-
-                break;
-            case BUCKET:
-
-                break;
-            default:
-                break;
-        }
-        motorarm.setTargetPosition(0);
-
-    }
+//    public void setArmPosition(Positions position){
+//        switch(position){
+//            case FLOOR:
+//
+//                break;
+//            case STOW:
+//
+//                break;
+//            case BUCKET:
+//
+//                break;
+//            default:
+//                break;
+//        }
+//        motorarm.setTargetPosition(0);
+//
+//    }
 
 
 
