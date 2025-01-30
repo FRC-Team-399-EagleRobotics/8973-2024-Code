@@ -3,9 +3,9 @@ package org.firstinspires.ftc.teamcode.Actions;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Sceduler {
+public class Scheduler {
     ArrayList<Action> Actions = new ArrayList<>();
-    public Sceduler() {
+    public Scheduler() {
     }
     public void run(){
         ArrayList<Integer> toRemove = new ArrayList<>();

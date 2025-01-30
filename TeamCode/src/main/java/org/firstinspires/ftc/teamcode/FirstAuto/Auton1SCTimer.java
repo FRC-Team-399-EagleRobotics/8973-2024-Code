@@ -9,12 +9,10 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 class Action{
     public Action() {
@@ -131,13 +129,28 @@ class ArmScore extends Action{
 }
 class Outake extends Action{
     Robot robot;
+    ElapsedTime timer;
+    double startTime;
+    boolean intialized;
     Outake(Robot r){
         robot = r;
+        intialized = false;
+
     }
     @Override
     public boolean run(){
+        if (!intialized){
+            timer = new ElapsedTime(0);
+            intialized = true;
+        }
         robot.intakeCoreHex.setPower(1);
-        return true;
+        if (timer.seconds()>2){
+            robot.intakeCoreHex.setPower(0);
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }
 class Drive extends Action{
@@ -221,8 +234,8 @@ class Scheduler {
     }
 }
 
-@Autonomous(name = "autonC", group = "Autonomous")
-public class auton1SampleCommand extends LinearOpMode {
+@Autonomous(name = "autonCTimer", group = "Autonomous")
+public class Auton1SCTimer extends LinearOpMode {
 
     private PIDController armController;
 
