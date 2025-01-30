@@ -5,6 +5,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -45,6 +46,7 @@ class Robot{
         motorarm = hardwareMap.dcMotor.get("arm");
         motorarm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorarm.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorarm.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft0.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRight1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backLeft2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -72,14 +74,14 @@ class SequentialAction extends Action{
     }
     @Override
     public boolean run(){
-        done = CurrentActions[0].run();
+        done = CurrentActions[index].run();
         if (done){
             index++;
-            if (index>CurrentActions.length){
-                return false;
+            if (index+1>CurrentActions.length){
+                return true;
             }
             else{
-                return true;
+                return false;
             }
         }
         else{
@@ -103,7 +105,7 @@ class ArmUpdate extends Action{
         armPos = robot.motorarm.getCurrentPosition();
         error = robot.target-armPos;
         armOutPower = error*kPArm;
-        robot.motorarm.setPower(-armOutPower);
+        robot.motorarm.setPower(armOutPower);
         return false;
     }
 }
@@ -117,12 +119,13 @@ class ArmScore extends Action{
 
     @Override
     public boolean run(){
-        robot.target = 140;//6;
+        robot.target = 1406;
         if (robot.motorarm.getCurrentPosition()+accuracy> robot.target) {
             return true;
         }
         else{
             return false;
+
             }
     }
 }
@@ -240,11 +243,13 @@ public class auton1SampleCommand extends LinearOpMode {
         boolean completed = false;
         Robot robot = new Robot(hardwareMap);
         Scheduler sceduler = new Scheduler();
-        sceduler.add(new SequentialAction(hardwareMap, new Drive(robot,0.5,10,0.5), new ArmScore(robot),new Outake(robot)));
+        sceduler.add(new SequentialAction(hardwareMap,new Drive(robot,-0.5,4,0),new Drive(robot,-0.5,27,-0.6),new Drive(robot,-0.5,14,0), new ArmScore(robot), new Outake(robot)));
         sceduler.add(new ArmUpdate(robot));
 //        sceduler.add(new Outake(robot));
         while (opModeIsActive()){
             sceduler.run();
+            telemetry.addData("ArmPosition",robot.motorarm.getCurrentPosition());
+            telemetry.update();
         }
     }
 }
