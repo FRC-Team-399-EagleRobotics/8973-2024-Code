@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.util.Range;
 public class main extends LinearOpMode {
     int target = 0;
     int error;
-    double kPArm = 0.01;
+    double kPArm = 0.01;//TODO decreace this to fix arm jitter
     DcMotor frontLeft0;
     DcMotor frontRight1;
     DcMotor backLeft2;
@@ -121,11 +121,11 @@ public class main extends LinearOpMode {
             telemetry.addData("Arm", motorarm.getCurrentPosition());
             telemetry.addData("drive",frontLeft0.getCurrentPosition());
             if(gamepad2.a) {
-                target = 0;
+                target = 0;//STOW
             } else if(gamepad2.b) {
-                target = 1406;//1125/20*25;
+                target = 1406;//1125/20*25;//TODO change this to arm score location
             } else if(gamepad2.x) {
-                target = 200;//160;
+                target = 200;//160;//TODO change this to correct ground
             }else if(gamepad2.y) {
                 target = -625;//500;
             }
