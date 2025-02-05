@@ -8,17 +8,17 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 public class Robot{
-    IMU imu;
-    int target;
-    int ticksPerIn = 45;//188;
-    DcMotor frontLeft0;
-    DcMotor frontRight1;
-    DcMotor backLeft2;
-    DcMotor backRight3;
-    DcMotor motorarm;
-    DcMotor extendarm;
-    Servo intake;
-    DcMotor intakeCoreHex;
+    public IMU imu;
+    public int target;
+    public int ticksPerIn = 45;//188;
+    public DcMotor frontLeft0;
+    public DcMotor frontRight1;
+    public DcMotor backLeft2;
+    public DcMotor backRight3;
+    public DcMotor motorarm;
+    public DcMotor extendarm;
+    public Servo intake;
+    public DcMotor intakeCoreHex;
     public Robot(HardwareMap hardwareMap) {
         frontLeft0 = hardwareMap.dcMotor.get("frontLeft0");
         frontRight1 = hardwareMap.dcMotor.get("frontRight1");
