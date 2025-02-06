@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Actions;
 
+import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.teamcode.Actions.Action;
 import org.firstinspires.ftc.teamcode.Actions.Robot;
 
@@ -8,19 +10,19 @@ public class TimedOutake extends Action {
     double targetTime;
     boolean initialized;
     ElapsedTime timer;
-    Outake(Robot r, double target){
+    public TimedOutake(Robot r, double target){
         robot = r;
         targetTime = target;
-        initialized = false:
+        initialized = false;
     }
     @Override
     public boolean run(){
         if(!initialized){
-            timer = new ElapsedRime()
+            timer = new ElapsedTime();
             robot.intakeCoreHex.setPower(1);
-            initialized = true
+            initialized = true;
         }
-      if timer.seconds()>targetTime{
+      if (timer.seconds()>targetTime){
         robot.intakeCoreHex.setPower(0);
         return true;
       }

@@ -11,13 +11,22 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.teamcode.Actions.ArmScore;
+import org.firstinspires.ftc.teamcode.Actions.ArmUpdate;
+import org.firstinspires.ftc.teamcode.Actions.Outake;
+import org.firstinspires.ftc.teamcode.Actions.Scheduler;
+import org.firstinspires.ftc.teamcode.Actions.SequentialAction;
+import org.firstinspires.ftc.teamcode.Actions.Robot;
+import org.firstinspires.ftc.teamcode.Actions.Drive;
+import org.firstinspires.ftc.teamcode.Actions.TimedOutake;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-@Autonomous(name = "autonC", group = "Autonomous")
-public class auton1SampleCommand extends LinearOpMode {
+@Autonomous(name = "1SamplePark", group = "Autonomous")
+public class OneSampleAndPark extends LinearOpMode {
 
     private PIDController armController;
 
@@ -38,7 +47,12 @@ public class auton1SampleCommand extends LinearOpMode {
         boolean completed = false;
         Robot robot = new Robot(hardwareMap);
         Scheduler sceduler = new Scheduler();
-        sceduler.add(new SequentialAction(hardwareMap,new Drive(robot,-0.5,4,0),new Drive(robot,-0.5,27,-0.6),new Drive(robot,-0.5,14,0), new ArmScore(robot), new Outake(robot)));
+        sceduler.add(new SequentialAction(hardwareMap,
+                new Drive(robot,-0.5,4,0),
+                new Drive(robot,-0.5,27,-0.6),
+                new Drive(robot,-0.5,14,0),
+                new ArmScore(robot),
+                new TimedOutake(robot,2)));
         sceduler.add(new ArmUpdate(robot));
 //        sceduler.add(new Outake(robot));
         while (opModeIsActive()){

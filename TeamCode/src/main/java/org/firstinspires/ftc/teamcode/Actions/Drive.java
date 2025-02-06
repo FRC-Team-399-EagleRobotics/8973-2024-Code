@@ -12,7 +12,7 @@ public class Drive extends Action {
     boolean initialized;
     double turn;
     double power;
-    Drive(Robot r, double pow, double pos, double t){
+    public Drive(Robot r, double pow, double pos, double t){
         robot  = r;
         initialized = false;
         power = pow;

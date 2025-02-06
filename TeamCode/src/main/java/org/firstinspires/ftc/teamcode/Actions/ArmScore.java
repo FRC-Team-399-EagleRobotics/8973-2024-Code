@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.Actions.Robot;
 public class ArmScore extends Action {
     Robot robot;
     double accuracy;
-    ArmScore(Robot r) {
+    public ArmScore(Robot r) {
         robot = r;
         accuracy = 20;
     }

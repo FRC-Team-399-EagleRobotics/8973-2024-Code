@@ -5,7 +5,7 @@ import org.firstinspires.ftc.teamcode.Actions.Robot;
 
 public class Outake extends Action {
     Robot robot;
-    Outake(Robot r){
+    public Outake(Robot r){
         robot = r;
     }
     @Override
